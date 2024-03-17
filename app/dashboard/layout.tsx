@@ -17,11 +17,6 @@ const SidebarItem: SidebarNavItem[] = [
     icon: Search,
     external: true,
   },
-  {
-    title: 'more',
-    href: '#',
-    icon: CircleEllipsis,
-  },
 ];
 
 export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -53,7 +48,6 @@ const SidebarContent = () => {
               'flex items-center p-2 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100',
               item.disabled && 'opacity-50 cursor-not-allowed',
               item.external && 'underline',
-              item.title === 'more' && 'absolute bottom-0 w-full',
             )}
             target={item.external ? '_blank' : undefined}
           >
@@ -61,6 +55,10 @@ const SidebarContent = () => {
             <span className="ml-2">{item.title}</span>
           </Link>
         ))}
+        <div className="flex items-center p-2 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100 absolute bottom-0 w-full cursor-pointer select-none">
+          <CircleEllipsis className="w-4 h-4" />
+          <span className="ml-2">more</span>
+        </div>
       </div>
     </div>
   );
