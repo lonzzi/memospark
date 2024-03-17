@@ -38,6 +38,7 @@ export const config = {
     }),
     GitHub,
   ],
+  trustHost: true,
   basePath: '/auth',
   callbacks: {
     authorized({ request, auth }) {
