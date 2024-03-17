@@ -1,41 +1,15 @@
-'use client';
+import { auth } from '@/auth';
 
-import { WithSidebar } from '@/components/with-sidebar';
-import Link from 'next/link';
+import { SignIn, SignOut } from '@/components/auth-components';
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const session = await auth();
+  console.log('session', session);
+
   return (
-    <WithSidebar sidebarContent={SidebarContent} mobileDashboardHeader={CustomHeader}>
-      <div className="p-10">
-        <p>dashboard</p>
-      </div>
-    </WithSidebar>
+    <div className="p-10">
+      <p>dashboard</p>
+      {session ? <SignOut /> : <SignIn />}
+    </div>
   );
 }
-
-const CustomHeader = () => {
-  return (
-    <div className="flex px-4">
-      <span className="text-2xl font-extrabold">Memospark</span>
-    </div>
-  );
-};
-
-const SidebarContent = () => {
-  return (
-    <div>
-      <CustomHeader />
-      <div className="mt-6">
-        {['Inicio', 'Preguntas'].map((item, index) => (
-          <Link
-            key={index}
-            href="#"
-            className="block rounded px-2 py-1 transition duration-75 hover:bg-gray-100"
-          >
-            {item}
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-};
