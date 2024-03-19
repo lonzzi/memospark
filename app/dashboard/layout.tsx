@@ -19,7 +19,9 @@ const SidebarItem: SidebarNavItem[] = [
   },
 ];
 
-export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function DashboardLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <WithSidebar sidebarContent={SidebarContent} mobileDashboardHeader={SidebarHeader}>
       {children}
@@ -29,7 +31,7 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
 
 const SidebarHeader = () => {
   return (
-    <div className="flex">
+    <div className="flex select-none">
       <span className="text-2xl font-bold">MS</span>
     </div>
   );
