@@ -75,9 +75,35 @@ const config = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            'ul:has(li):has(input[type="checkbox"])': {
+              padding: 0,
+            },
+            'ul > li:has(input[type="checkbox"])': {
+              listStyle: 'none',
+            },
+            'ul > li:has(input[type="checkbox"]) ul li': {
+              paddingLeft: 30,
+            },
+            'ul > li': {
+              paddingInlineStart: '1.5em',
+            },
+            'ul > li::before': {
+              top: '50%',
+              transform: 'translateY(-50%)',
+            },
+            'ul > li::after': {
+              top: '50%',
+              transform: 'translateY(-50%) rotate(45deg)',
+            },
+          },
+        },
+      },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
 } satisfies Config;
 
 export default config;
