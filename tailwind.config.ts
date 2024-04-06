@@ -98,6 +98,9 @@ const config = {
               top: '50%',
               transform: 'translateY(-50%) rotate(45deg)',
             },
+            p: {
+              margin: '0',
+            },
           },
         },
       },
