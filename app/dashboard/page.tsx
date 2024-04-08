@@ -1,7 +1,9 @@
 'use client';
 
+import { fetchUserByEmail } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import * as React from 'react';
 
@@ -75,6 +77,8 @@ export default function Dashboard() {
 }
 
 const DashboardNavigationMenu = () => {
+  const session = useSession();
+
   return (
     <NavigationMenu>
       <NavigationMenuList className="space-x-4">
@@ -84,14 +88,17 @@ const DashboardNavigationMenu = () => {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <ListItem href="/docs" title="Introduction">
-                Re-usable components built using Radix UI and Tailwind CSS.
-              </ListItem>
-              <ListItem href="/docs/installation" title="Installation">
-                How to install dependencies and structure your app.
-              </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Typography">
-                Styles for headings, paragraphs, lists...etc
+              <ListItem
+                title="fetchUser"
+                onClick={async () => {
+                  const email = session?.data?.user?.email;
+                  console.log(session);
+                  if (!email) return;
+                  const res = await fetchUserByEmail(email);
+                  console.log('res', res);
+                }}
+              >
+                Click here to see the code snippet for fetching a user.
               </ListItem>
             </ul>
           </NavigationMenuContent>

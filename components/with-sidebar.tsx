@@ -34,7 +34,7 @@ const SidebarItem: SidebarNavItem[] = [
 
 const UserAvatar = ({ className, user }: { className?: string; user: Session['user'] }) => {
   return (
-    <Avatar className={cn('cursor-pointer hidden md:flex w-9 h-9', className)}>
+    <Avatar className={cn('cursor-pointer hidden md:flex w-8 h-8', className)}>
       <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
       <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
     </Avatar>
@@ -44,7 +44,7 @@ const UserAvatar = ({ className, user }: { className?: string; user: Session['us
 const SidebarHeader = ({ user }: { user: Session['user'] }) => {
   return (
     <div className="flex select-none justify-between items-center">
-      <span className="text-2xl font-bold">MS</span>
+      <span className="text-xl font-bold">MS</span>
       {user && (
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">

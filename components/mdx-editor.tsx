@@ -6,6 +6,7 @@ import {
   ChangeCodeMirrorLanguage,
   type CodeBlockEditorDescriptor,
   ConditionalContents,
+  DiffSourceToggleWrapper,
   InsertCodeBlock,
   InsertSandpack,
   ListsToggle,
@@ -17,6 +18,7 @@ import {
   UndoRedo,
   codeBlockPlugin,
   codeMirrorPlugin,
+  diffSourcePlugin,
   headingsPlugin,
   listsPlugin,
   markdownShortcutPlugin,
@@ -115,15 +117,14 @@ function Editor({
 }: { editorRef?: ForwardedRef<MDXEditorMethods> | null } & MDXEditorProps) {
   return (
     <OriginMDXEditor
-      contentEditableClassName="prose"
+      contentEditableClassName="prose max-w-none"
       plugins={[
+        diffSourcePlugin({ diffMarkdown: '', viewMode: 'rich-text' }),
         toolbarPlugin({
           toolbarContents: () => (
             <>
-              {' '}
               <UndoRedo />
               <BoldItalicUnderlineToggles />
-              <BlockTypeSelect />
               <ListsToggle />
               <ConditionalContents
                 options={[
@@ -145,6 +146,9 @@ function Editor({
                   },
                 ]}
               />
+              <DiffSourceToggleWrapper>
+                <BlockTypeSelect />
+              </DiffSourceToggleWrapper>
             </>
           ),
         }),
