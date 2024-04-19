@@ -18,7 +18,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsedCredentials = z
           .object({
             email: z.string().email(),
-            // username: z.string().min(3),
             password: z.string().min(6),
           })
           .safeParse(credentials);
@@ -46,38 +45,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
     CredentialsProvider({
-      id: 'logout',
-      credentials: {
-        username: { label: 'Username', type: 'text' },
-        password: { label: 'Password', type: 'password' },
-        confirmPassword: { label: 'Confirm Password', type: 'password' },
-      },
+      id: 'signup',
       async authorize(credentials) {
-        console.log('signup', credentials);
-        const { username, password, confirmPassword } = credentials as {
-          username: string;
-          password: string;
-          confirmPassword: string;
-        };
+        const parsedCredentials = z
+          .object({
+            email: z.string().email(),
+            password: z.string().min(6),
+            confirmPassword: z.string().min(6),
+          })
+          .safeParse(credentials);
 
-        if (password !== confirmPassword) {
-          throw new Error('Passwords do not match');
-        }
+        console.log('signup', parsedCredentials);
 
-        const user = await prisma.user.findFirst({
-          where: {
-            name: username,
-            password,
-          },
-        });
-
-        if (!user) {
-          return await prisma.user.create({
+        if (parsedCredentials.success) {
+          const { email, password, confirmPassword } = parsedCredentials.data;
+          if (password !== confirmPassword) throw new Error('passwords do not match');
+          const user = await prisma.user.create({
             data: {
-              name: username,
-              password,
+              email,
+              name: email,
+              password: await bcrypt.hash(password, 10),
             },
           });
+          return user;
         }
 
         return null;

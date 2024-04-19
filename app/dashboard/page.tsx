@@ -1,6 +1,5 @@
 import { DashboardNavigationMenu } from '@/app/ui/dashboard/navigation-menu';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
-import * as React from 'react';
 
 import { Button } from '@/components/ui/button';
 
