@@ -21,7 +21,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 const SidebarItem: SidebarNavItem[] = [
   {
     title: 'home',
-    href: '/dashboard',
+    href: '/',
     icon: Home,
   },
   {
@@ -64,7 +64,7 @@ const SidebarHeader = ({ user }: { user: Session['user'] }) => {
               <span className="ml-2">Profile</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              <Link href="/dashboard/setting" className="flex w-full">
+              <Link href="/setting" className="flex w-full">
                 <Settings className="w-5 h-5" />
                 <span className="ml-2">Setting</span>
               </Link>
@@ -76,10 +76,12 @@ const SidebarHeader = ({ user }: { user: Session['user'] }) => {
                   'use server';
                   await signOut();
                 }}
-                className="w-full flex items-center"
+                className="w-full"
               >
-                <LogOut className="w-5 h-5" />
-                <button className="w-full text-left ml-2">Sign Out</button>
+                <button className="w-full flex items-center text-left">
+                  <LogOut className="w-5 h-5" />
+                  <span className="ml-2">Sign Out</span>
+                </button>
               </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -158,8 +160,8 @@ const WithDesktopSidebar = ({
 }) => {
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="px-8 md:px-0 h-screen flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-      <aside className="fixed top-14 z-30 hidden h-screen w-full shrink-0 border-r md:sticky md:block bg-nav-primary">
+    <div className="px-8 md:px-0 h-screen flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10 md:overflow-auto">
+      <aside className="fixed top-14 z-30 hidden h-screen w-full shrink-0 border-r md:sticky md:top-0 md:block bg-nav-primary">
         <div className="h-full p-4">
           <SidebarContent user={user} items={items} />
         </div>

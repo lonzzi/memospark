@@ -97,12 +97,12 @@ export default function LoginForm({ type = 'login' }: LoginFormProps) {
         <LoginButton type={type} />
         <div className="my-2 text-sm">
           {type === 'login' && (
-            <Link href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl || '')}`}>
+            <Link href={`/signup?callbackUrl=${encodeURIComponent(callbackUrl || '')}`}>
               Don&apos;t have an account? Sign up
             </Link>
           )}
           {type === 'signup' && (
-            <Link href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl || '')}`}>
+            <Link href={`/login?callbackUrl=${encodeURIComponent(callbackUrl || '')}`}>
               Have an account? Log in
             </Link>
           )}

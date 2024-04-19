@@ -5,7 +5,16 @@ export const config = {
   basePath: '/auth',
   callbacks: {
     authorized({ request: { nextUrl }, auth }) {
-      if (nextUrl.pathname === '/dashboard') return !!auth;
+      const isLoggedIn = !!auth?.user;
+      const whitelist = ['/login', '/signup', '/forgot-password'];
+      const isNotOnWhitelist = !whitelist.includes(nextUrl.pathname);
+      if (isNotOnWhitelist) {
+        if (isLoggedIn) return true;
+        return false; // Redirect unauthenticated users to login page
+      } else if (isLoggedIn) {
+        const callbackUrl = nextUrl.searchParams.get('callbackUrl');
+        return Response.redirect(new URL(callbackUrl || '/', nextUrl));
+      }
       return true;
     },
   },
@@ -14,9 +23,9 @@ export const config = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/auth/login',
+    signIn: '/login',
   },
-  providers: [],
+  providers: [], // Add providers with an empty array for now
 } satisfies NextAuthConfig;
 
 export default config;
