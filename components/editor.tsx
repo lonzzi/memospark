@@ -52,13 +52,12 @@ const TOOLS = {
 
 const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
 
-function WithBaseFullSetup({
-  value,
-  onChange,
-}: {
+type EditorType = {
   value?: YooptaContentValue;
   onChange?: (value: YooptaContentValue) => void;
-}) {
+} & Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>;
+
+function WithBaseFullSetup({ value, onChange, ...props }: EditorType) {
   const editor = useMemo(() => createYooptaEditor(), []);
   const selectionRef = useRef(null);
 
@@ -74,10 +73,7 @@ function WithBaseFullSetup({
   }, [editor, onChange]);
 
   return (
-    <div
-      // className="md:py-[100px] md:pl-[200px] md:pr-[80px] px-[20px] pt-[80px] pb-[40px] flex justify-center"
-      ref={selectionRef}
-    >
+    <div {...props} ref={selectionRef}>
       <YooptaEditor
         editor={editor}
         plugins={plugins as YooptaPlugin[]}
