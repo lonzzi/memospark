@@ -1,10 +1,11 @@
 'use client';
 
-import type { OutputData } from '@editorjs/editorjs';
+import { EDITOR_BASIC_INIT_VALUE } from '@/lib/mock';
+import { type YooptaContentValue } from '@yoopta/editor/dist/editor/types';
 import dynamic from 'next/dynamic';
 import { Suspense, useState } from 'react';
 
-const Editor = dynamic(() => import('@/components/editor').then((mod) => mod.Editor), {
+const Editor = dynamic(() => import('@/components/editor'), {
   ssr: false,
 });
 
@@ -15,20 +16,14 @@ export default function Page({
     id: string;
   };
 }) {
-  console.log(params);
-  const [data, setData] = useState<OutputData>();
+  const [value, setValue] = useState<YooptaContentValue | undefined>(
+    params.id === 'example' ? EDITOR_BASIC_INIT_VALUE : undefined,
+  );
 
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <Editor
-          config={{
-            autofocus: true,
-            placeholder: 'Let`s write an awesome story!',
-          }}
-          data={data}
-          onDataChange={setData}
-        />
+        <Editor value={value} onChange={setValue} />
       </Suspense>
     </div>
   );

@@ -1,86 +1,94 @@
-import { cn } from '@/lib/utils';
-import CheckList from '@editorjs/checklist';
-import Code from '@editorjs/code';
-import Delimiter from '@editorjs/delimiter';
-import EditorJS, { type EditorConfig, type OutputData } from '@editorjs/editorjs';
-import Embed from '@editorjs/embed';
-import Header from '@editorjs/header';
-import Image from '@editorjs/image';
-import InlineCode from '@editorjs/inline-code';
-import Link from '@editorjs/link';
-import List from '@editorjs/list';
-import Paragraph from '@editorjs/paragraph';
-import Quote from '@editorjs/quote';
-import SimpleImage from '@editorjs/simple-image';
-import { type PropsWithChildren, useEffect, useRef } from 'react';
+import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list';
+import Blockquote from '@yoopta/blockquote';
+import Callout from '@yoopta/callout';
+import Code from '@yoopta/code';
+import YooptaEditor, { YooptaPlugin, createYooptaEditor } from '@yoopta/editor';
+import type { YooptaContentValue } from '@yoopta/editor/dist/editor/types';
+import Embed from '@yoopta/embed';
+import File from '@yoopta/file';
+import { HeadingOne, HeadingThree, HeadingTwo } from '@yoopta/headings';
+import Image from '@yoopta/image';
+import Link from '@yoopta/link';
+import LinkTool, { DefaultLinkToolRender } from '@yoopta/link-tool';
+import { BulletedList, NumberedList, TodoList } from '@yoopta/lists';
+import { Bold, CodeMark, Highlight, Italic, Strike, Underline } from '@yoopta/marks';
+import Paragraph from '@yoopta/paragraph';
+import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
+import Video from '@yoopta/video';
+import { useEffect, useMemo, useRef } from 'react';
 
-type EditorProps = PropsWithChildren<{
-  holder?: string;
-  data?: OutputData;
-  onDataChange?: (data: OutputData) => void;
-  config?: EditorConfig;
-  maxWidth?: string | number;
-}> &
-  React.HTMLAttributes<HTMLDivElement>;
+const plugins = [
+  Paragraph,
+  HeadingOne,
+  HeadingTwo,
+  HeadingThree,
+  Blockquote,
+  Callout,
+  NumberedList,
+  BulletedList,
+  TodoList,
+  Code,
+  Link,
+  Embed,
+  Image,
+  Video,
+  File,
+];
 
-export const Editor: React.FC<EditorProps> = ({
-  holder,
-  data,
-  onDataChange,
-  config = {},
-  maxWidth = 1000,
-  children,
-  ...props
-}) => {
-  const editor = useRef<EditorJS | null>(null);
-  const maxW = typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth;
+const TOOLS = {
+  ActionMenu: {
+    render: DefaultActionMenuRender,
+    tool: ActionMenuList,
+  },
+  Toolbar: {
+    render: DefaultToolbarRender,
+    tool: Toolbar,
+  },
+  LinkTool: {
+    render: DefaultLinkToolRender,
+    tool: LinkTool,
+  },
+};
+
+const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
+
+function WithBaseFullSetup({
+  value,
+  onChange,
+}: {
+  value?: YooptaContentValue;
+  onChange?: (value: YooptaContentValue) => void;
+}) {
+  const editor = useMemo(() => createYooptaEditor(), []);
+  const selectionRef = useRef(null);
 
   useEffect(() => {
-    if (!editor.current) {
-      editor.current = new EditorJS({
-        ...config,
-        holder,
-        data,
-        tools: {
-          code: Code,
-          header: Header,
-          paragraph: Paragraph,
-          checklist: CheckList,
-          embed: Embed,
-          image: Image,
-          inlineCode: InlineCode,
-          link: Link,
-          list: List,
-          quote: Quote,
-          simpleImage: SimpleImage,
-          delimiter: Delimiter,
-        },
-        async onChange(api) {
-          const data = await api.saver.save();
-          onDataChange?.(data);
-        },
-      });
+    function handleChange(value: YooptaContentValue) {
+      console.log('value', value);
+      onChange?.(value);
     }
-
+    editor.on('change', handleChange);
     return () => {
-      if (editor.current && editor.current.destroy) {
-        editor.current.destroy();
-      }
+      editor.off('change', handleChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [editor, onChange]);
 
   return (
     <div
-      {...props}
-      id={holder || 'editorjs'}
-      className={cn(
-        'prose max-w-full',
-        `[&_.ce-block\\_\\_content]:max-w-[${maxW}] [&_.ce-toolbar\\_\\_content]:max-w-[${maxW}]`,
-        props.className,
-      )}
+      // className="md:py-[100px] md:pl-[200px] md:pr-[80px] px-[20px] pt-[80px] pb-[40px] flex justify-center"
+      ref={selectionRef}
     >
-      {children}
+      <YooptaEditor
+        editor={editor}
+        plugins={plugins as YooptaPlugin[]}
+        tools={TOOLS}
+        marks={MARKS}
+        selectionBoxRoot={selectionRef}
+        value={value}
+        autoFocus
+      />
     </div>
   );
-};
+}
+
+export default WithBaseFullSetup;

@@ -42,3 +42,7 @@ export async function register(prevState: string | undefined, formData: FormData
     throw error;
   }
 }
+
+export async function authenticateWithGithub() {
+  await signIn('github');
+}
