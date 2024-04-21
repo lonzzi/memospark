@@ -1,9 +1,9 @@
 import { DashboardNavigationMenu } from '@/app/ui/dashboard/navigation-menu';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { Suspense } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { RecentPosts } from '../ui/dashboard/post-list';
 
-export default function Dashboard() {
+export default async function Dashboard() {
   return (
     <div className="space-y-8">
       <section>
@@ -14,11 +14,9 @@ export default function Dashboard() {
       </section>
       <section>
         <h2 className="text-lg font-medium mb-6">Recently</h2>
-        <div className="text-xs text-gray-800">
-          <Button variant="outline" className="p-6">
-            New Page <ChevronDownIcon className="ml-2" />
-          </Button>
-        </div>
+        <Suspense fallback={'loading'}>
+          <RecentPosts />
+        </Suspense>
       </section>
     </div>
   );

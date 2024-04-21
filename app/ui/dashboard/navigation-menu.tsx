@@ -1,108 +1,67 @@
 'use client';
 
-import { fetchUserByEmail } from '@/lib/data';
+import { createPost } from '@/lib/actions';
 import { cn } from '@/lib/utils';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: 'Alert Dialog',
-    href: '/docs/primitives/alert-dialog',
-    description:
-      'A modal dialog that interrupts the user with important content and expects a response.',
-  },
-  {
-    title: 'Hover Card',
-    href: '/docs/primitives/hover-card',
-    description: 'For sighted users to preview content available behind a link.',
-  },
-  {
-    title: 'Progress',
-    href: '/docs/primitives/progress',
-    description:
-      'Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.',
-  },
-  {
-    title: 'Scroll-area',
-    href: '/docs/primitives/scroll-area',
-    description: 'Visually or semantically separates content.',
-  },
-  {
-    title: 'Tabs',
-    href: '/docs/primitives/tabs',
-    description:
-      'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
-  },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-  },
-];
-
 export const DashboardNavigationMenu = () => {
-  const session = useSession();
+  const router = useRouter();
 
   return (
     <NavigationMenu>
       <NavigationMenuList className="space-x-4">
-        <NavigationMenuItem>
+        {/* <NavigationMenuItem>
           <NavigationMenuTrigger className="p-6 border border-input shadow-sm">
-            Getting started
+            New Page
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+            <ul className="flex flex-col p-2 w-[200px]">
               <ListItem
                 title="fetchUser"
                 onClick={async () => {
-                  // 'use server';
                   const email = session?.data?.user?.email;
                   console.log(session);
                   if (!email) return;
                   const res = await fetchUserByEmail(email);
                   console.log('res', res);
                 }}
-              >
-                Click here to see the code snippet for fetching a user.
-              </ListItem>
+              />
             </ul>
           </NavigationMenuContent>
+        </NavigationMenuItem> */}
+        <NavigationMenuItem>
+          <button
+            className={cn(navigationMenuTriggerStyle(), 'p-6 border border-input shadow-sm')}
+            onClick={async () => {
+              const res = await createPost({
+                title: 'New Post',
+              });
+              if ('errors' in res) {
+                // Handle error response
+                console.error(res.message);
+                return;
+              }
+              const postId = res.id;
+              router.push(`/post/${postId}`);
+            }}
+          >
+            New Post
+          </button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="p-6 border border-input shadow-sm">
-            Components
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-              {components.map((component) => (
-                <ListItem key={component.title} title={component.title} href={component.href}>
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/docs" legacyBehavior passHref>
-            <NavigationMenuLink
-              className={cn(navigationMenuTriggerStyle(), 'p-6 border border-input shadow-sm')}
-            >
-              Documentation
-            </NavigationMenuLink>
-          </Link>
+          <button className={cn(navigationMenuTriggerStyle(), 'p-6 border border-input shadow-sm')}>
+            New Collection
+          </button>
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

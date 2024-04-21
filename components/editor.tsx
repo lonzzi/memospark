@@ -1,3 +1,5 @@
+'use client';
+
 import ActionMenuList, { DefaultActionMenuRender } from '@yoopta/action-menu-list';
 import Blockquote from '@yoopta/blockquote';
 import Callout from '@yoopta/callout';
@@ -15,6 +17,7 @@ import { Bold, CodeMark, Highlight, Italic, Strike, Underline } from '@yoopta/ma
 import Paragraph from '@yoopta/paragraph';
 import Toolbar, { DefaultToolbarRender } from '@yoopta/toolbar';
 import Video from '@yoopta/video';
+import _ from 'lodash';
 import { useEffect, useMemo, useRef } from 'react';
 
 const plugins = [
@@ -55,22 +58,23 @@ const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
 type EditorType = {
   value?: YooptaContentValue;
   onChange?: (value: YooptaContentValue) => void;
+  timeout?: number;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
-function WithBaseFullSetup({ value, onChange, ...props }: EditorType) {
+function WithBaseFullSetup({ value, onChange, timeout = 5000, ...props }: EditorType) {
   const editor = useMemo(() => createYooptaEditor(), []);
   const selectionRef = useRef(null);
 
   useEffect(() => {
     function handleChange(value: YooptaContentValue) {
-      console.log('value', value);
       onChange?.(value);
     }
-    editor.on('change', handleChange);
+    const debouncedChange = _.debounce(handleChange, timeout);
+    editor.on('change', debouncedChange);
     return () => {
-      editor.off('change', handleChange);
+      editor.off('change', debouncedChange);
     };
-  }, [editor, onChange]);
+  }, [editor, onChange, timeout]);
 
   return (
     <div {...props} ref={selectionRef}>
