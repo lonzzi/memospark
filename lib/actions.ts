@@ -22,6 +22,7 @@ export async function authenticate(prevState: string | undefined, formData: Form
       }
       switch (error.type) {
         case 'CredentialsSignin':
+          console.log('err: ', formData);
           return 'Invalid credentials.';
         default:
           return 'Something went wrong.';
