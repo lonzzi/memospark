@@ -17,6 +17,8 @@ model Collection {
   posts       Post[]
   author      User?    @relation(fields: [authorId], references: [id])
   authorId    String?
+
+  @@map("collections")
 }
 
 model Post {
@@ -29,6 +31,8 @@ model Post {
   authorId     String?
   Collection   Collection? @relation(fields: [collectionId], references: [id])
   collectionId String?
+
+  @@map("posts")
 }
 
 model User {

@@ -58,10 +58,10 @@ const MARKS = [Bold, Italic, CodeMark, Underline, Strike, Highlight];
 type EditorType = {
   value?: YooptaContentValue;
   onChange?: (value: YooptaContentValue) => void;
-  timeout?: number;
+  delay?: number;
 } & Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
-function WithBaseFullSetup({ value, onChange, timeout = 5000, ...props }: EditorType) {
+function WithBaseFullSetup({ value, onChange, delay = 5000, ...props }: EditorType) {
   const editor = useMemo(() => createYooptaEditor(), []);
   const selectionRef = useRef(null);
 
@@ -69,12 +69,12 @@ function WithBaseFullSetup({ value, onChange, timeout = 5000, ...props }: Editor
     function handleChange(value: YooptaContentValue) {
       onChange?.(value);
     }
-    const debouncedChange = _.debounce(handleChange, timeout);
+    const debouncedChange = _.debounce(handleChange, delay);
     editor.on('change', debouncedChange);
     return () => {
       editor.off('change', debouncedChange);
     };
-  }, [editor, onChange, timeout]);
+  }, [editor, onChange, delay]);
 
   return (
     <div {...props} ref={selectionRef}>

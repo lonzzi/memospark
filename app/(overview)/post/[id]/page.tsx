@@ -1,6 +1,8 @@
+import { EditorWrapper } from '@/app/ui/post/editor-wrapper';
 import { updatePost } from '@/lib/actions';
 import { fetchPostById } from '@/lib/data';
 import { EDITOR_BASIC_INIT_VALUE } from '@/lib/mock';
+import type { Post } from '@prisma/client';
 import { type YooptaContentValue } from '@yoopta/editor/dist/editor/types';
 import dynamicImport from 'next/dynamic';
 
@@ -18,11 +20,14 @@ export default async function Page({
   let value: YooptaContentValue | undefined =
     params.id === 'example' ? EDITOR_BASIC_INIT_VALUE : undefined;
 
+  let post: Post | null;
   if (params.id !== 'example') {
-    const content = (await fetchPostById(params.id))?.content;
-    if (content) {
+    post = await fetchPostById(params.id);
+    if (post) {
       try {
-        value = JSON.parse(content) as YooptaContentValue;
+        if (post.content) {
+          value = JSON.parse(post.content);
+        }
       } catch (e) {
         console.error(e);
       }
@@ -30,10 +35,10 @@ export default async function Page({
   }
 
   return (
-    <div>
+    <EditorWrapper>
       <Editor
         value={value}
-        timeout={1000}
+        delay={1000}
         onChange={async (value) => {
           'use server';
           if (!params.id || params.id === 'example') return;
@@ -44,6 +49,6 @@ export default async function Page({
           });
         }}
       />
-    </div>
+    </EditorWrapper>
   );
 }
