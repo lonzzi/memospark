@@ -6,9 +6,9 @@ import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
 
 type LoginFormProps = {
   type?: 'login' | 'signup';
@@ -17,14 +17,10 @@ type LoginFormProps = {
 export default function LoginForm({ type = 'login' }: LoginFormProps) {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
-  const { toast } = useToast();
   const [, loginDispatch] = useFormState(async (...args: Parameters<typeof authenticate>) => {
     const msg = await authenticate(...args);
     if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-      });
+      toast.error(msg);
     }
     return msg;
   }, undefined);
@@ -32,10 +28,7 @@ export default function LoginForm({ type = 'login' }: LoginFormProps) {
   const [, registerDispatch] = useFormState(async (...args: Parameters<typeof register>) => {
     const msg = await register(...args);
     if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-      });
+      toast.error(msg);
     }
     return msg;
   }, undefined);

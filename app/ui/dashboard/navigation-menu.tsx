@@ -4,7 +4,7 @@ import { createPost } from '@/lib/actions';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   NavigationMenu,
@@ -16,6 +16,7 @@ import {
 
 export const DashboardNavigationMenu = () => {
   const router = useRouter();
+  const [creating, setCreating] = useState(false);
 
   return (
     <NavigationMenu>
@@ -43,17 +44,20 @@ export const DashboardNavigationMenu = () => {
           <button
             className={cn(navigationMenuTriggerStyle(), 'p-6 border border-input shadow-sm')}
             onClick={async () => {
+              setCreating(true);
               const res = await createPost({
                 title: 'New Post',
               });
               if ('errors' in res) {
                 // Handle error response
                 console.error(res.message);
-                return;
+                setCreating(false);
+              } else {
+                const postId = res.id;
+                router.push(`/post/${postId}`);
               }
-              const postId = res.id;
-              router.push(`/post/${postId}`);
             }}
+            disabled={creating}
           >
             New Post
           </button>

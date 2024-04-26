@@ -62,7 +62,7 @@ const PostSchema = z.object({
 });
 
 const CreatePost = PostSchema.omit({ id: true });
-const UpdatePost = PostSchema;
+const UpdatePost = PostSchema.partial({ title: true });
 
 type CreatePost = z.infer<typeof CreatePost>;
 type UpdatePost = z.infer<typeof UpdatePost>;
@@ -113,4 +113,14 @@ export async function updatePost(post: UpdatePost) {
       content,
     },
   });
+}
+
+export async function deletePost(id: string) {
+  const res = await prisma.post.delete({
+    where: {
+      id,
+    },
+  });
+  revalidatePath('/', 'page');
+  return res;
 }

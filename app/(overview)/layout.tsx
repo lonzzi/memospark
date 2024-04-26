@@ -9,7 +9,7 @@ export default async function DashboardLayout({
 
   return (
     <WithSidebar user={session?.user}>
-      <div className="p-6">{children}</div>
+      <div className="p-6 relative">{children}</div>
     </WithSidebar>
   );
 }

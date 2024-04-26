@@ -1,14 +1,25 @@
 import { EditorWrapper } from '@/app/ui/post/editor-wrapper';
+import { EditorSkeleton } from '@/app/ui/post/skeletons';
 import { updatePost } from '@/lib/actions';
 import { fetchPostById } from '@/lib/data';
-import { EDITOR_BASIC_INIT_VALUE } from '@/lib/mock';
 import type { Post } from '@prisma/client';
-import { type YooptaContentValue } from '@yoopta/editor/dist/editor/types';
-import dynamicImport from 'next/dynamic';
+import dynamic from 'next/dynamic';
 
-const Editor = dynamicImport(() => import('@/components/editor'), {
+const Editor = dynamic(() => import('@/components/editor/advanced-editor'), {
   ssr: false,
+  loading: () => <EditorSkeleton />,
 });
+
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  let post: Post | null = null;
+  if (params.id !== 'example') {
+    post = await fetchPostById(params.id);
+  }
+
+  return {
+    title: post?.title || 'New Post',
+  };
+}
 
 export default async function Page({
   params,
@@ -17,38 +28,24 @@ export default async function Page({
     id: string;
   };
 }) {
-  let value: YooptaContentValue | undefined =
-    params.id === 'example' ? EDITOR_BASIC_INIT_VALUE : undefined;
+  // let value: YooptaContentValue | undefined =
+  //   params.id === 'example' ? EDITOR_BASIC_INIT_VALUE : undefined;
 
-  let post: Post | null;
-  if (params.id !== 'example') {
-    post = await fetchPostById(params.id);
-    if (post) {
-      try {
-        if (post.content) {
-          value = JSON.parse(post.content);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }
+  const post: Post | null = null;
+
+  const handleSave = async (post: Partial<Post>) => {
+    'use server';
+    if (!params.id || params.id === 'example') return;
+    return await updatePost({
+      id: params.id,
+      ...post,
+      content: post.content || undefined,
+    });
+  };
 
   return (
-    <EditorWrapper>
-      <Editor
-        value={value}
-        delay={1000}
-        onChange={async (value) => {
-          'use server';
-          if (!params.id || params.id === 'example') return;
-          await updatePost({
-            id: params.id,
-            title: 'New Post',
-            content: JSON.stringify(value),
-          });
-        }}
-      />
+    <EditorWrapper post={post} onValueChange={handleSave}>
+      <Editor />
     </EditorWrapper>
   );
 }

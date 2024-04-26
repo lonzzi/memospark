@@ -2,6 +2,7 @@ import { DashboardNavigationMenu } from '@/app/ui/dashboard/navigation-menu';
 import { Suspense } from 'react';
 
 import { RecentPosts } from '../ui/dashboard/post-list';
+import { PostListSkeleton } from '../ui/post/skeletons';
 
 export default async function Dashboard() {
   return (
@@ -14,7 +15,7 @@ export default async function Dashboard() {
       </section>
       <section>
         <h2 className="text-lg font-medium mb-6">Recently</h2>
-        <Suspense fallback={'loading'}>
+        <Suspense fallback={<PostListSkeleton />}>
           <RecentPosts />
         </Suspense>
       </section>
