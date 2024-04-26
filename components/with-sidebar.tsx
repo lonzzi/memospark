@@ -21,7 +21,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 const SidebarItem: SidebarNavItem[] = [
   {
     title: 'home',
-    href: '/dashboard',
+    href: '/',
     icon: Home,
   },
   {
@@ -34,7 +34,7 @@ const SidebarItem: SidebarNavItem[] = [
 
 const UserAvatar = ({ className, user }: { className?: string; user: Session['user'] }) => {
   return (
-    <Avatar className={cn('cursor-pointer hidden md:flex w-9 h-9', className)}>
+    <Avatar className={cn('cursor-pointer hidden md:flex w-8 h-8', className)}>
       <AvatarImage src={user?.image || ''} alt={user?.name || ''} />
       <AvatarFallback>{user?.name?.[0]}</AvatarFallback>
     </Avatar>
@@ -44,7 +44,7 @@ const UserAvatar = ({ className, user }: { className?: string; user: Session['us
 const SidebarHeader = ({ user }: { user: Session['user'] }) => {
   return (
     <div className="flex select-none justify-between items-center">
-      <span className="text-2xl font-bold">MS</span>
+      <span className="text-xl font-bold">MS</span>
       {user && (
         <DropdownMenu>
           <DropdownMenuTrigger className="outline-none">
@@ -64,7 +64,7 @@ const SidebarHeader = ({ user }: { user: Session['user'] }) => {
               <span className="ml-2">Profile</span>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
-              <Link href="/dashboard/setting" className="flex w-full">
+              <Link href="/setting" className="flex w-full">
                 <Settings className="w-5 h-5" />
                 <span className="ml-2">Setting</span>
               </Link>
@@ -76,10 +76,12 @@ const SidebarHeader = ({ user }: { user: Session['user'] }) => {
                   'use server';
                   await signOut();
                 }}
-                className="w-full flex items-center"
+                className="w-full"
               >
-                <LogOut className="w-5 h-5" />
-                <button className="w-full text-left ml-2">Sign Out</button>
+                <button className="w-full flex items-center text-left">
+                  <LogOut className="w-5 h-5" />
+                  <span className="ml-2">Sign Out</span>
+                </button>
               </form>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -158,8 +160,8 @@ const WithDesktopSidebar = ({
 }) => {
   return (
     // style used from here -> https://github.com/shadcn-ui/ui/blob/1cf5fad881b1da8f96923b7ad81d22d0aa3574b9/apps/www/app/docs/layout.tsx#L12
-    <div className="px-8 md:px-0 h-screen flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] md:gap-6 lg:grid-cols-[240px_minmax(0,1fr)] lg:gap-10">
-      <aside className="fixed top-14 z-30 hidden h-screen w-full shrink-0 border-r md:sticky md:block bg-nav-primary">
+    <div className="px-8 md:px-0 h-screen flex-1 items-start md:grid md:grid-cols-[220px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)] md:overflow-auto">
+      <aside className="fixed top-14 z-30 md:z-auto hidden h-screen w-full shrink-0 border-r md:sticky md:top-0 md:block bg-nav-primary">
         <div className="h-full p-4">
           <SidebarContent user={user} items={items} />
         </div>
