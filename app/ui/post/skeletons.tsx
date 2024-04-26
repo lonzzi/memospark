@@ -18,7 +18,7 @@ export const PostListSkeleton: React.FC = () => {
 
 export const EditorSkeleton: React.FC = () => {
   return (
-    <div className="mt-4 flex flex-col h-full space-y-2">
+    <div className="ProseMirror mt-4 flex flex-col h-full space-y-2">
       <Skeleton className="w-1/2 h-6" />
       <Skeleton className="h-10" />
     </div>

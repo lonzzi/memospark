@@ -22,7 +22,7 @@ export default function RootLayout({
       <body>
         <SessionProvider basePath="/auth">
           <main>{children}</main>
-          <Toaster />
+          <Toaster richColors />
         </SessionProvider>
       </body>
     </html>

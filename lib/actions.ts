@@ -92,7 +92,6 @@ export async function createPost(post: CreatePost) {
 }
 
 export async function updatePost(post: UpdatePost) {
-  revalidatePath('/posts/[id]', 'page');
   const validatedFields = UpdatePost.safeParse(post);
 
   if (!validatedFields.success) {
@@ -104,7 +103,7 @@ export async function updatePost(post: UpdatePost) {
 
   const { id, title, content } = validatedFields.data;
 
-  return await prisma.post.update({
+  const res = await prisma.post.update({
     where: {
       id,
     },
@@ -113,6 +112,9 @@ export async function updatePost(post: UpdatePost) {
       content,
     },
   });
+
+  revalidatePath('/posts/[id]', 'page');
+  return res;
 }
 
 export async function deletePost(id: string) {

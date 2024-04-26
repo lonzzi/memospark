@@ -9,6 +9,8 @@ import { LinkSelector } from './selectors/link-selector';
 import { NodeSelector } from './selectors/node-selector';
 import { TextButtons } from './selectors/text-buttons';
 import { slashCommand, suggestionItems } from './slash-command';
+import { castDraft } from 'immer';
+import { useParams } from 'next/navigation';
 import {
   EditorCommand,
   EditorCommandEmpty,
@@ -26,31 +28,45 @@ import { useDebouncedCallback } from 'use-debounce';
 
 import { defaultEditorContent } from './content';
 
+import { useSetEditorAtom } from '@/atoms/hooks/editor';
+
 import { Separator } from '@/components/ui/separator';
 
 const extensions = [...defaultExtensions, slashCommand];
 
-const TailwindAdvancedEditor = () => {
-  const [initialContent, setInitialContent] = useState<null | JSONContent>(null);
+type TailwindAdvancedEditorProps = {
+  value?: JSONContent;
+  onUpdate?: (value: string) => void;
+};
+
+const TailwindAdvancedEditor: React.FC<TailwindAdvancedEditorProps> = ({ value, onUpdate }) => {
+  const [initialContent, setInitialContent] = useState<undefined | JSONContent>(value);
+  const params = useParams();
 
   const [openNode, setOpenNode] = useState(false);
   const [openColor, setOpenColor] = useState(false);
   const [openLink, setOpenLink] = useState(false);
   const [openAI, setOpenAI] = useState(false);
+  const setEditorAtom = useSetEditorAtom();
 
   const debouncedUpdates = useDebouncedCallback(async (editor: EditorInstance) => {
     const json = editor.getJSON();
 
-    window.localStorage.setItem('novel-content', JSON.stringify(json));
+    // window.localStorage.setItem('novel-content', JSON.stringify(json));
+    if (onUpdate) {
+      onUpdate(JSON.stringify(json));
+      setEditorAtom((draft) => {
+        draft.lastSavedAt = new Date().valueOf();
+        draft.status = 'idle';
+      });
+    }
   }, 500);
 
   useEffect(() => {
-    const content = window.localStorage.getItem('novel-content');
-    if (content) setInitialContent(JSON.parse(content));
-    else setInitialContent(defaultEditorContent);
-  }, []);
-
-  if (!initialContent) return null;
+    if (params.id === 'example') {
+      setInitialContent(defaultEditorContent);
+    }
+  }, [params.id]);
 
   return (
     <div className="relative w-full max-w-screen-lg">
@@ -72,8 +88,16 @@ const TailwindAdvancedEditor = () => {
           }}
           onUpdate={({ editor }) => {
             debouncedUpdates(editor);
+            setEditorAtom((draft) => {
+              draft.status = 'saving';
+            });
           }}
           slotAfter={<ImageResizer />}
+          onCreate={({ editor }) => {
+            setEditorAtom((draft) => {
+              draft.editor = castDraft(editor);
+            });
+          }}
         >
           <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
             <EditorCommandEmpty className="px-2 text-muted-foreground">
