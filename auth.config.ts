@@ -6,7 +6,7 @@ export const config = {
   callbacks: {
     authorized({ request: { nextUrl }, auth }) {
       const isLoggedIn = !!auth?.user;
-      const whitelist = ['/login', '/signup', '/forgot-password'];
+      const whitelist = ['/login', '/signup', '/account-recovery', '/toc'];
       const isNotOnWhitelist = !whitelist.includes(nextUrl.pathname);
       if (isNotOnWhitelist) {
         if (isLoggedIn) return true;

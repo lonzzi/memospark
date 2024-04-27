@@ -1,28 +1,22 @@
 'use client';
 
-import { register } from '@/lib/actions';
+import { register } from '@/actions/auth';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
-import { useFormState } from 'react-dom';
+import { useFormState, useFormStatus } from 'react-dom';
+import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { toast } from '@/components/ui/use-toast';
 
 export default function Page() {
   const [userProvidedPassword, setUserProvidedPassword] = useState('');
   const [isTocAccepted, setIsTocAccepted] = useState(false);
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
   const [, registerDispatch] = useFormState(async (...args: Parameters<typeof register>) => {
     const msg = await register(...args);
     if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-      });
+      toast.error(msg);
     }
     return msg;
   }, undefined);
@@ -66,13 +60,19 @@ export default function Page() {
               </Link>
             </label>
           </div>
-          <Button className="w-full" type="submit" disabled={!isTocAccepted}>
-            <Link href={`/auth/signup?callbackUrl=${encodeURIComponent(callbackUrl || '')}`}>
-              Create account
-            </Link>
-          </Button>
+          <RegisterButton isTocAccepted={isTocAccepted} />
         </div>
       </div>
     </form>
+  );
+}
+
+function RegisterButton({ isTocAccepted }: { isTocAccepted: boolean }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button className="w-full" type="submit" disabled={!isTocAccepted || pending}>
+      Create account
+    </Button>
   );
 }
