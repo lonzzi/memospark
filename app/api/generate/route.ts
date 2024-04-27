@@ -1,5 +1,5 @@
-import { Ratelimit } from '@upstash/ratelimit';
-import { kv } from '@vercel/kv';
+// import { Ratelimit } from '@upstash/ratelimit';
+// import { kv } from '@vercel/kv';
 import { OpenAIStream, StreamingTextResponse } from 'ai';
 import OpenAI from 'openai';
 import { match } from 'ts-pattern';
@@ -10,44 +10,45 @@ import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 // Using LLamma's OpenAI client:
 
 // IMPORTANT! Set the runtime to edge: https://vercel.com/docs/functions/edge-functions/edge-runtime
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 // const llama = new OpenAI({
 //   apiKey: 'ollama',
-//   baseURL: process.env.OLLAMA_API_URL || 'http://localhost:11434/v1',
+//   baseURL: 'http://localhost:11434/v1',
 // });
 
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+  baseURL: process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+});
+
 export async function POST(req: Request): Promise<Response> {
-  const openai = new OpenAI({
-    apiKey: 'pk-xNvhQFOMKAvAbMcMcwbrrEPUEppkTtpRSpwMMfLAXtRbhOuq',
-    baseURL: 'http://u.ronki.moe:11434/v1',
-  });
   // Check if the OPENAI_API_KEY is set, if not return 400
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === '') {
     return new Response('Missing OPENAI_API_KEY - make sure to add it to your .env file.', {
       status: 400,
     });
   }
-  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-    const ip = req.headers.get('x-forwarded-for');
-    const ratelimit = new Ratelimit({
-      redis: kv,
-      limiter: Ratelimit.slidingWindow(50, '1 d'),
-    });
+  // if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+  //   const ip = req.headers.get('x-forwarded-for');
+  //   const ratelimit = new Ratelimit({
+  //     redis: kv,
+  //     limiter: Ratelimit.slidingWindow(50, '1 d'),
+  //   });
 
-    const { success, limit, reset, remaining } = await ratelimit.limit(`novel_ratelimit_${ip}`);
+  //   const { success, limit, reset, remaining } = await ratelimit.limit(`novel_ratelimit_${ip}`);
 
-    if (!success) {
-      return new Response('You have reached your request limit for the day.', {
-        status: 429,
-        headers: {
-          'X-RateLimit-Limit': limit.toString(),
-          'X-RateLimit-Remaining': remaining.toString(),
-          'X-RateLimit-Reset': reset.toString(),
-        },
-      });
-    }
-  }
+  //   if (!success) {
+  //     return new Response('You have reached your request limit for the day.', {
+  //       status: 429,
+  //       headers: {
+  //         'X-RateLimit-Limit': limit.toString(),
+  //         'X-RateLimit-Remaining': remaining.toString(),
+  //         'X-RateLimit-Reset': reset.toString(),
+  //       },
+  //     });
+  //   }
+  // }
 
   const { prompt, option, command } = await req.json();
   const messages = match(option)
