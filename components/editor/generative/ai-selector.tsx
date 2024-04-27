@@ -30,7 +30,7 @@ export function AISelector({ onOpenChange }: AISelectorProps) {
 
   const { completion, complete, isLoading } = useCompletion({
     // id: "novel",
-    api: 'https://novel-sh-reverse-proxy.ronki.workers.dev/https://novel.sh/api/generate',
+    api: '/api/generate',
     onResponse: (response) => {
       if (response.status === 429) {
         toast.error('You have reached your request limit for the day.');

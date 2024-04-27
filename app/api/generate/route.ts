@@ -10,7 +10,7 @@ import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 // Using LLamma's OpenAI client:
 
 // IMPORTANT! Set the runtime to edge: https://vercel.com/docs/functions/edge-functions/edge-runtime
-// export const runtime = 'edge';
+export const runtime = 'edge';
 
 // const llama = new OpenAI({
 //   apiKey: 'ollama',
@@ -132,7 +132,7 @@ export async function POST(req: Request): Promise<Response> {
     .run() as ChatCompletionMessageParam[];
 
   const response = await openai.chat.completions.create({
-    model: 'phi3',
+    model: 'gpt-3.5-turbo',
     stream: true,
     messages,
     temperature: 0.7,
