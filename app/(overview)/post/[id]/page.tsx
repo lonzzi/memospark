@@ -1,6 +1,6 @@
+import { updatePost } from '@/actions/post';
 import { EditorWrapper } from '@/app/ui/post/editor-wrapper';
 import { EditorSkeleton } from '@/app/ui/post/skeletons';
-import { updatePost } from '@/lib/actions';
 import { DEFAULT_POST_TITLE } from '@/lib/const';
 import { fetchPostById } from '@/lib/data';
 import type { Post } from '@prisma/client';

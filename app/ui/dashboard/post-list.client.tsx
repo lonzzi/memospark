@@ -1,6 +1,6 @@
 'use client';
 
-import { deletePost } from '@/lib/actions';
+import { deletePost } from '@/actions/post';
 import dayjs from '@/lib/dayjs';
 import type { Post } from '@prisma/client';
 import { Ellipsis, Trash } from 'lucide-react';
