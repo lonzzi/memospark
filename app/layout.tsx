@@ -1,5 +1,4 @@
 import './globals.css';
-import { AI } from '@/actions/ai';
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
@@ -21,12 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className}>
       <body>
-        <AI>
-          <SessionProvider basePath="/auth">
-            <main>{children}</main>
-            <Toaster richColors />
-          </SessionProvider>
-        </AI>
+        <SessionProvider basePath="/auth">
+          <main>{children}</main>
+          <Toaster richColors />
+        </SessionProvider>
       </body>
     </html>
   );
