@@ -8,7 +8,6 @@ import {
   TaskList,
   TiptapImage,
   TiptapLink,
-  UpdatedImage,
 } from 'novel/extensions';
 import { UploadImagesPlugin } from 'novel/plugins';
 
@@ -39,11 +38,11 @@ const tiptapImage = TiptapImage.extend({
   },
 });
 
-const updatedImage = UpdatedImage.configure({
-  HTMLAttributes: {
-    class: cx('rounded-lg border border-muted'),
-  },
-});
+// const updatedImage = UpdatedImage.configure({
+//   HTMLAttributes: {
+//     class: cx('rounded-lg border border-muted'),
+//   },
+// });
 
 const taskList = TaskList.configure({
   HTMLAttributes: {
@@ -108,7 +107,7 @@ export const defaultExtensions = [
   placeholder,
   tiptapLink,
   tiptapImage,
-  updatedImage,
+  // updatedImage,
   taskList,
   taskItem,
   horizontalRule,

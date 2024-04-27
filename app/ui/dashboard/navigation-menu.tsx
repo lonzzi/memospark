@@ -1,6 +1,6 @@
 'use client';
 
-import { createPost } from '@/lib/actions';
+import { createPost } from '@/actions/post';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

@@ -1,7 +1,7 @@
 'use client';
 
+import { authenticate, authenticateWithGithub, register } from '@/actions/auth';
 import { lusitana } from '@/app/ui/fonts';
-import { authenticate, authenticateWithGithub, register } from '@/lib/actions';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';

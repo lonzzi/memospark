@@ -19,8 +19,8 @@ export const runtime = 'edge';
 
 export async function POST(req: Request): Promise<Response> {
   const openai = new OpenAI({
-    apiKey: 'ollama',
-    baseURL: process.env.OLLAMA_API_URL || 'http://localhost:11434/v1',
+    apiKey: 'pk-xNvhQFOMKAvAbMcMcwbrrEPUEppkTtpRSpwMMfLAXtRbhOuq',
+    baseURL: 'http://u.ronki.moe:11434/v1',
   });
   // Check if the OPENAI_API_KEY is set, if not return 400
   if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === '') {

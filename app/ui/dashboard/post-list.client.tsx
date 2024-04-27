@@ -1,13 +1,11 @@
 'use client';
 
-import { deletePost } from '@/lib/actions';
+import { deletePost } from '@/actions/post';
+import dayjs from '@/lib/dayjs';
 import type { Post } from '@prisma/client';
-import dayjs from 'dayjs';
-import timezone from 'dayjs/plugin/timezone';
-import utc from 'dayjs/plugin/utc';
 import { Ellipsis, Trash } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,11 +16,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCaption, TableCell, TableRow } from '@/components/ui/table';
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
 export const RecentPostsClient = ({ posts }: { posts: Post[] }) => {
   const [isPending, setIsPending] = useState(false);
+
+  useEffect(() => {
+    setIsPending(false);
+  }, [posts]);
 
   return (
     <Table>
@@ -58,7 +57,6 @@ export const RecentPostsClient = ({ posts }: { posts: Post[] }) => {
                       onClick={async () => {
                         setIsPending(true);
                         await deletePost(post.id);
-                        setIsPending(false);
                       }}
                     >
                       <Trash className="w-4 h-4 mr-2" />

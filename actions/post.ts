@@ -1,8 +1,7 @@
 'use server';
 
-import prisma from './prisma';
-import { auth, signIn } from '@/auth';
-import { AuthError } from 'next-auth';
+import { auth } from '@/auth';
+import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
@@ -10,50 +9,6 @@ export type State<T> = {
   errors?: T;
   message?: string | null;
 };
-
-export async function authenticate(prevState: string | undefined, formData: FormData) {
-  try {
-    await signIn('login', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      const causedError = error.cause?.err;
-      if (causedError) {
-        return causedError.message;
-      }
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
-    throw error;
-  }
-}
-
-export async function register(prevState: string | undefined, formData: FormData) {
-  try {
-    await signIn('signup', formData);
-  } catch (error) {
-    if (error instanceof AuthError) {
-      const causedError = error.cause?.err;
-      if (causedError) {
-        return causedError.message;
-      }
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
-        default:
-          return 'Something went wrong.';
-      }
-    }
-    throw error;
-  }
-}
-
-export async function authenticateWithGithub() {
-  await signIn('github');
-}
 
 const PostSchema = z.object({
   id: z.string(),
@@ -92,7 +47,6 @@ export async function createPost(post: CreatePost) {
 }
 
 export async function updatePost(post: UpdatePost) {
-  revalidatePath('/posts/[id]', 'page');
   const validatedFields = UpdatePost.safeParse(post);
 
   if (!validatedFields.success) {
@@ -104,7 +58,7 @@ export async function updatePost(post: UpdatePost) {
 
   const { id, title, content } = validatedFields.data;
 
-  return await prisma.post.update({
+  const res = await prisma.post.update({
     where: {
       id,
     },
@@ -113,6 +67,9 @@ export async function updatePost(post: UpdatePost) {
       content,
     },
   });
+
+  revalidatePath('/posts/[id]', 'page');
+  return res;
 }
 
 export async function deletePost(id: string) {
