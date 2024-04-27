@@ -10,7 +10,7 @@ import type { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 // Using LLamma's OpenAI client:
 
 // IMPORTANT! Set the runtime to edge: https://vercel.com/docs/functions/edge-functions/edge-runtime
-export const runtime = 'edge';
+// export const runtime = 'edge';
 
 // const llama = new OpenAI({
 //   apiKey: 'ollama',
