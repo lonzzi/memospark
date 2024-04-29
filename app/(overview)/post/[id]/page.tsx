@@ -1,8 +1,7 @@
-import { updatePost } from '@/actions/post';
+import { fetchPosts, updatePost } from '@/actions/post';
 import { EditorWrapper } from '@/app/ui/post/editor-wrapper';
 import { EditorSkeleton } from '@/app/ui/post/skeletons';
 import { DEFAULT_POST_TITLE } from '@/lib/const';
-import { fetchPostById } from '@/lib/data';
 import type { Post } from '@prisma/client';
 import dynamic from 'next/dynamic';
 import type { JSONContent } from 'novel';
@@ -15,7 +14,7 @@ const Editor = dynamic(() => import('@/components/editor/advanced-editor'), {
 export async function generateMetadata({ params }: { params: { id: string } }) {
   let post: Post | null = null;
   if (params.id !== 'example') {
-    post = await fetchPostById(params.id);
+    post = await fetchPosts({ id: params.id });
   }
 
   return {
@@ -32,7 +31,7 @@ export default async function Page({
 }) {
   let value: JSONContent | undefined = undefined;
 
-  const post: Post | null = await fetchPostById(params.id);
+  const post: Post | null = await fetchPosts({ id: params.id });
   try {
     value = post?.content && JSON.parse(post?.content);
   } catch (e) {

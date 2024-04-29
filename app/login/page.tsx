@@ -1,34 +1,48 @@
 'use client';
 
 import { authenticate, authenticateWithGithub } from '@/actions/auth';
+import { useActionState } from '@/hooks';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import Link from 'next/link';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useEffect, useTransition } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 export default function Page() {
-  const [, loginDispatch] = useFormState(async (...args: Parameters<typeof authenticate>) => {
-    const msg = await authenticate(...args);
-    if (msg) {
-      toast.error(msg);
+  const [error, submitAction, isPending] = useActionState(authenticate, undefined);
+  const [isGithubPending, startGithubTransition] = useTransition();
+
+  useEffect(() => {
+    if (error && !isPending) {
+      toast.error(error);
     }
-    return msg;
-  }, undefined);
+  }, [error, isPending]);
 
   return (
     <div className="h-screen w-screen antialiased bg-background">
       <div className="min-w-fit min-h-fit w-1/6 h-2/3 mx-auto flex flex-col justify-center items-center gap-2">
         <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl pb-6">Sign in</h1>
-        <form action={loginDispatch} className="w-full space-y-2">
+        <form action={submitAction} className="w-full space-y-2">
           <Input type="email" placeholder="Email" name="email" />
           <Input type="password" placeholder="Password" className="mb-1" name="password" />
-          <LoginButton />
+          <Button className="w-full" type="submit" disabled={isPending || isGithubPending}>
+            Sign in
+          </Button>
         </form>
-        <form action={authenticateWithGithub} className="w-full">
-          <OauthButton provider="github" />
+        <form
+          action={async () => {
+            startGithubTransition(async () => {
+              await authenticateWithGithub();
+            });
+          }}
+          className="w-full"
+        >
+          <Button className="w-full" disabled={isPending || isGithubPending} variant={'outline'}>
+            <GitHubLogoIcon className="w-4 h-4 mr-2" />
+            Continue with GitHub
+          </Button>
         </form>
         <div className="flex items-center justify-center w-full h-4 flex-none">
           <div className="w-full h-[1px] visible border-b my--4 py--4" />
@@ -44,26 +58,5 @@ export default function Page() {
         </Button>
       </div>
     </div>
-  );
-}
-
-function LoginButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button className="w-full" type="submit" disabled={pending}>
-      Sign in
-    </Button>
-  );
-}
-
-function OauthButton({ provider }: { provider: 'github' }) {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button className="w-full" disabled={pending} variant={'outline'}>
-      {provider === 'github' ? <GitHubLogoIcon className="w-4 h-4 mr-2" /> : ''}
-      {provider === 'github' ? 'Continue with GitHub' : 'Continue with Google'}
-    </Button>
   );
 }

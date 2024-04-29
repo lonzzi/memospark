@@ -2,7 +2,9 @@
 
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
+import type { Post } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
+import { unstable_noStore as noStore } from 'next/cache';
 import { z } from 'zod';
 
 export type State<T> = {
@@ -25,6 +27,9 @@ type UpdatePost = z.infer<typeof UpdatePost>;
 export async function createPost(post: CreatePost) {
   const session = await auth();
   const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error('User not found');
+  }
 
   const validatedFields = CreatePost.safeParse(post);
 
@@ -58,6 +63,12 @@ export async function updatePost(post: UpdatePost) {
 
   const { id, title, content } = validatedFields.data;
 
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error('User not found');
+  }
+
   const res = await prisma.post.update({
     where: {
       id,
@@ -73,6 +84,11 @@ export async function updatePost(post: UpdatePost) {
 }
 
 export async function deletePost(id: string) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error('User not found');
+  }
   const res = await prisma.post.delete({
     where: {
       id,
@@ -80,4 +96,30 @@ export async function deletePost(id: string) {
   });
   revalidatePath('/', 'page');
   return res;
+}
+
+export function fetchPosts(options: { id: string }): Promise<Post>;
+export function fetchPosts(options?: { offset?: number; limit?: number }): Promise<Post[]>;
+export async function fetchPosts(options?: { offset?: number; limit?: number; id?: string }) {
+  noStore();
+
+  const { offset = 0, limit = 10, id } = options || {};
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error('User not found');
+  }
+
+  if (typeof id === 'string') {
+    return await prisma.post.findUnique({
+      where: { id: id },
+    });
+  }
+
+  return await prisma.post.findMany({
+    where: { authorId: userId },
+    orderBy: { createdAt: 'desc' },
+    skip: offset,
+    take: limit,
+  });
 }

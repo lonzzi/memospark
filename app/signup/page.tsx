@@ -1,9 +1,9 @@
 'use client';
 
 import { register } from '@/actions/auth';
+import { useActionState } from '@/hooks';
 import Link from 'next/link';
-import { useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -13,20 +13,20 @@ import { Input } from '@/components/ui/input';
 export default function Page() {
   const [userProvidedPassword, setUserProvidedPassword] = useState('');
   const [isTocAccepted, setIsTocAccepted] = useState(false);
-  const [, registerDispatch] = useFormState(async (...args: Parameters<typeof register>) => {
-    const msg = await register(...args);
-    if (msg) {
-      toast.error(msg);
+  const [error, submitAction, isPending] = useActionState(register, undefined);
+
+  useEffect(() => {
+    if (error && !isPending) {
+      toast.error(error);
     }
-    return msg;
-  }, undefined);
+  }, [error, isPending]);
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     setUserProvidedPassword(event.target.value);
   }
 
   return (
-    <form action={registerDispatch}>
+    <form action={submitAction}>
       <div className="h-screen w-screen antialiased bg-background">
         <div className="min-w-fit min-h-fit mx-auto h-1/3 flex flex-col justify-end items-center pb-4">
           <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl pb-12">
@@ -60,19 +60,11 @@ export default function Page() {
               </Link>
             </label>
           </div>
-          <RegisterButton isTocAccepted={isTocAccepted} />
+          <Button className="w-full" type="submit" disabled={!isTocAccepted || isPending}>
+            Create account
+          </Button>
         </div>
       </div>
     </form>
-  );
-}
-
-function RegisterButton({ isTocAccepted }: { isTocAccepted: boolean }) {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button className="w-full" type="submit" disabled={!isTocAccepted || pending}>
-      Create account
-    </Button>
   );
 }

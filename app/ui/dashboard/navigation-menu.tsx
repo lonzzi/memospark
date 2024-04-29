@@ -1,10 +1,12 @@
 'use client';
 
 import { createPost } from '@/actions/post';
+import { DEFAULT_POST_TITLE } from '@/lib/const';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   NavigationMenu,
@@ -21,36 +23,17 @@ export const DashboardNavigationMenu = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="space-x-4">
-        {/* <NavigationMenuItem>
-          <NavigationMenuTrigger className="p-6 border border-input shadow-sm">
-            New Page
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="flex flex-col p-2 w-[200px]">
-              <ListItem
-                title="fetchUser"
-                onClick={async () => {
-                  const email = session?.data?.user?.email;
-                  console.log(session);
-                  if (!email) return;
-                  const res = await fetchUserByEmail(email);
-                  console.log('res', res);
-                }}
-              />
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem> */}
         <NavigationMenuItem>
           <button
             className={cn(navigationMenuTriggerStyle(), 'p-6 border border-input shadow-sm')}
             onClick={async () => {
               setCreating(true);
               const res = await createPost({
-                title: 'New Post',
+                title: DEFAULT_POST_TITLE,
               });
               if ('errors' in res) {
                 // Handle error response
-                console.error(res.message);
+                toast.error(res.message);
                 setCreating(false);
               } else {
                 const postId = res.id;

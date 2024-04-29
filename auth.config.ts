@@ -13,7 +13,7 @@ export const config = {
         return false; // Redirect unauthenticated users to login page
       } else if (isLoggedIn) {
         const callbackUrl = nextUrl.searchParams.get('callbackUrl');
-        return Response.redirect(new URL(callbackUrl || '/', nextUrl));
+        return Response.redirect(new URL(callbackUrl || '/'));
       }
       return true;
     },
