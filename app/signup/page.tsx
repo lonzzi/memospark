@@ -35,11 +35,11 @@ export default function Page() {
         </div>
 
         <div className="min-w-fit min-h-fit mx-auto w-1/6 flex flex-col justify-center items-center gap-3">
-          <Input type="email" placeholder="Email" name="email" />
-          <Input type="password" placeholder="Password" name="password" />
+          <Input type="email" placeholder="邮箱" name="email" />
+          <Input type="password" placeholder="密码" name="password" />
           <Input
             type="password"
-            placeholder="Re-enter the password"
+            placeholder="重新输入你的密码"
             onChange={onChange}
             name="confirmPassword"
             value={userProvidedPassword}
@@ -54,14 +54,14 @@ export default function Page() {
               htmlFor="terms"
               className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              Accept our{' '}
+              同意{' '}
               <Link href="/toc" className="underline">
-                Terms and Conditions
+                我们的政策
               </Link>
             </label>
           </div>
           <Button className="w-full" type="submit" disabled={!isTocAccepted || isPending}>
-            Create account
+            创建账号
           </Button>
         </div>
       </div>

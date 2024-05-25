@@ -1,9 +1,10 @@
 // sidebar component from https://gist.github.com/sturmenta/2dc2006ee17a8529fc63535b82626721
+import SidebarItemList from './sidebar-item';
+import { fetchCollections } from '@/actions/collection';
 import { signOut } from '@/auth';
 import { cn } from '@/lib/utils';
 import type { SidebarNavItem } from '@/types';
 import { CircleEllipsis, CircleUserRound, LogOut, MenuIcon, Settings } from 'lucide-react';
-import { Home, Search } from 'lucide-react';
 import type { Session } from 'next-auth';
 import Link from 'next/link';
 
@@ -17,20 +18,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-
-const SidebarItem: SidebarNavItem[] = [
-  {
-    title: 'home',
-    href: '/',
-    icon: Home,
-  },
-  {
-    title: 'google search',
-    href: 'https://google.com',
-    icon: Search,
-    external: true,
-  },
-];
 
 const UserAvatar = ({ className, user }: { className?: string; user: Session['user'] }) => {
   return (
@@ -78,7 +65,7 @@ const SidebarHeader = ({ user }: { user: Session['user'] }) => {
                 }}
                 className="w-full"
               >
-                <button className="w-full flex items-center text-left">
+                <button className="w-full flex items-center text-left" type="submit">
                   <LogOut className="w-5 h-5" />
                   <span className="ml-2">Sign Out</span>
                 </button>
@@ -96,21 +83,7 @@ const SidebarContent = ({ items, user }: { items?: SidebarNavItem[]; user?: Sess
     <div className="h-full relative">
       <SidebarHeader user={user} />
       <div className="flex flex-col mt-6">
-        {items?.map((item, index) => (
-          <Link
-            href={item.href || '#'}
-            key={index}
-            className={cn(
-              'flex items-center p-2 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100',
-              item.disabled && 'opacity-50 cursor-not-allowed',
-              item.external && 'underline',
-            )}
-            target={item.external ? '_blank' : undefined}
-          >
-            <item.icon className="w-4 h-4" />
-            <span className="ml-2">{item.title}</span>
-          </Link>
-        ))}
+        <SidebarItemList items={items || []} />
         <div className="flex items-center p-2 text-sm font-medium text-gray-500 rounded-md hover:bg-gray-100 absolute bottom-0 w-full cursor-pointer select-none">
           <CircleEllipsis className="w-4 h-4" />
           <span className="ml-2">more</span>
@@ -171,18 +144,27 @@ const WithDesktopSidebar = ({
   );
 };
 
-export const WithSidebar = ({
+export const WithSidebar = async ({
   children,
   user,
   ...props
 }: {
   children: React.ReactNode;
-  items?: SidebarNavItem[];
   user?: Session['user'];
 }) => {
+  const res = await fetchCollections();
+  const items: SidebarNavItem[] = [
+    { type: 'separator' },
+    ...res.map((item) => ({
+      title: item.name,
+      items: [],
+      id: item.id,
+    })),
+  ];
+
   return (
-    <WithDesktopSidebar user={user} items={SidebarItem} {...props}>
-      <WithMobileSidebar user={user} items={SidebarItem} {...props}>
+    <WithDesktopSidebar user={user} items={items} {...props}>
+      <WithMobileSidebar user={user} items={items} {...props}>
         {children}
       </WithMobileSidebar>
     </WithDesktopSidebar>

@@ -42,11 +42,21 @@ export async function createPost(post: CreatePost) {
 
   const { title, content } = validatedFields.data;
 
+  const collection = await prisma.collection.upsert({
+    where: { name: 'default' },
+    update: {},
+    create: {
+      name: 'default',
+      authorId: userId,
+    },
+  });
+
   return await prisma.post.create({
     data: {
-      authorId: userId,
       title,
       content,
+      authorId: userId,
+      collectionId: collection.id,
     },
   });
 }
@@ -80,6 +90,7 @@ export async function updatePost(post: UpdatePost) {
   });
 
   revalidatePath('/posts/[id]', 'page');
+  revalidatePath('/', 'page');
   return res;
 }
 
@@ -100,7 +111,17 @@ export async function deletePost(id: string) {
 
 export function fetchPosts(options: { id: string }): Promise<Post>;
 export function fetchPosts(options?: { offset?: number; limit?: number }): Promise<Post[]>;
-export async function fetchPosts(options?: { offset?: number; limit?: number; id?: string }) {
+export function fetchPosts(options?: {
+  collectionId: string;
+  offset?: number;
+  limit?: number;
+}): Promise<Post[]>;
+export async function fetchPosts(options?: {
+  offset?: number;
+  limit?: number;
+  id?: string;
+  collectionId?: string;
+}) {
   noStore();
 
   const { offset = 0, limit = 10, id } = options || {};
@@ -113,6 +134,15 @@ export async function fetchPosts(options?: { offset?: number; limit?: number; id
   if (typeof id === 'string') {
     return await prisma.post.findUnique({
       where: { id: id },
+    });
+  }
+
+  if (typeof options?.collectionId === 'string') {
+    return await prisma.post.findMany({
+      where: { collectionId: options.collectionId },
+      orderBy: { createdAt: 'desc' },
+      skip: offset,
+      take: limit,
     });
   }
 

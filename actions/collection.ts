@@ -3,6 +3,7 @@
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import type { Collection } from '@prisma/client';
+import { revalidatePath } from 'next/cache';
 
 export async function createCollection(title: string) {
   const session = await auth();
@@ -19,6 +20,8 @@ export async function createCollection(title: string) {
       message: 'Title is required',
     };
   }
+
+  revalidatePath('/', 'page');
 
   return await prisma.collection.create({
     data: {
@@ -46,6 +49,7 @@ export async function updateCollection(
     },
   });
 
+  revalidatePath('/', 'page');
   return res;
 }
 
@@ -56,6 +60,8 @@ export async function deleteCollection(id: string) {
     throw new Error('User not found');
   }
 
+  revalidatePath('/', 'page');
+
   return await prisma.collection.delete({
     where: {
       id,
@@ -64,11 +70,11 @@ export async function deleteCollection(id: string) {
 }
 
 export function fetchCollections(id: string): Promise<Collection>;
-export function fetchCollections(options: {
+export function fetchCollections(options?: {
   offset?: number;
   limit?: number;
 }): Promise<Collection[]>;
-export async function fetchCollections(params: string | { offset?: number; limit?: number }) {
+export async function fetchCollections(params?: string | { offset?: number; limit?: number }) {
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) {
@@ -83,7 +89,7 @@ export async function fetchCollections(params: string | { offset?: number; limit
     });
   }
 
-  const { offset = 0, limit = 10 } = params;
+  const { offset = 0, limit = 10 } = params || {};
 
   return await prisma.collection.findMany({
     where: {

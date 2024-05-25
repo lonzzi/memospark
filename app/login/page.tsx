@@ -23,12 +23,12 @@ export default function Page() {
   return (
     <div className="h-screen w-screen antialiased bg-background">
       <div className="min-w-fit min-h-fit w-1/6 h-2/3 mx-auto flex flex-col justify-center items-center gap-2">
-        <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl pb-6">Sign in</h1>
+        <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl pb-6">登录</h1>
         <form action={submitAction} className="w-full space-y-2">
-          <Input type="email" placeholder="Email" name="email" />
-          <Input type="password" placeholder="Password" className="mb-1" name="password" />
+          <Input type="email" placeholder="邮箱" name="email" />
+          <Input type="password" placeholder="密码" className="mb-1" name="password" />
           <Button className="w-full" type="submit" disabled={isPending || isGithubPending}>
-            Sign in
+            登录
           </Button>
         </form>
         <form
@@ -41,7 +41,7 @@ export default function Page() {
         >
           <Button className="w-full" disabled={isPending || isGithubPending} variant={'outline'}>
             <GitHubLogoIcon className="w-4 h-4 mr-2" />
-            Continue with GitHub
+            使用 GitHub 登录
           </Button>
         </form>
         <div className="flex items-center justify-center w-full h-4 flex-none">
@@ -51,10 +51,10 @@ export default function Page() {
           </p>
         </div>
         <Button className="w-full" variant="outline" asChild>
-          <Link href={'/signup'}>Create an Account</Link>
+          <Link href={'/signup'}>创建账号</Link>
         </Button>
         <Button variant={'link'} className="text-muted-foreground font-normal h-fit" asChild>
-          <Link href={'/account-recovery'}>Having trouble signing in?</Link>
+          <Link href={'/account-recovery'}>登录遇到了问题?</Link>
         </Button>
       </div>
     </div>

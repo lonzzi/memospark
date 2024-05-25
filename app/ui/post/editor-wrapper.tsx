@@ -1,9 +1,11 @@
 'use client';
 
+import { currentPostAtom } from '@/atoms/post';
 import { DEFAULT_POST_TITLE } from '@/lib/const';
 import { timeAgo } from '@/lib/utils';
 import type { Post } from '@prisma/client';
 import { useDebounce } from '@uidotdev/usehooks';
+import { useAtom } from 'jotai';
 import { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 
 import { useEditorAtom } from '@/atoms/hooks/editor';
@@ -24,6 +26,7 @@ export const EditorWrapper: React.FC<EditorWrapperProps> = ({ post, onValueChang
   const debouncedTitle = useDebounce(title, 500);
   const postId = useRef(post?.id);
   const handleChange = useRef(onValueChange);
+  const [, setCurrentPost] = useAtom(currentPostAtom);
 
   useEffect(() => {
     if (!postId.current) return;
@@ -37,6 +40,14 @@ export const EditorWrapper: React.FC<EditorWrapperProps> = ({ post, onValueChang
       status.post = post;
     });
   }, [post, setEditorState]);
+
+  useEffect(() => {
+    if (!title || !post) return;
+    setCurrentPost({
+      ...post,
+      title,
+    });
+  }, [post, setCurrentPost, title]);
 
   return (
     <div className="flex flex-col h-full">
